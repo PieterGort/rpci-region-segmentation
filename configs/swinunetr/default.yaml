@@ -1,0 +1,60 @@
+# Configuration file for SwinUNETR training
+# RPCI Region Segmentation
+
+# Model parameters
+model:
+  name: "SwinUNETR"
+  in_channels: 1
+  out_channels: 14  # Background + 13 regions
+  feature_size: 48
+  drop_rate: 0.0
+  attn_drop_rate: 0.0
+  dropout_path_rate: 0.0
+  use_checkpoint: true
+
+# Training parameters
+training:
+  learning_rate: 1.0e-4
+  weight_decay: 1.0e-5
+  max_iter: 25000
+  eval_num: 500
+  batch_size: 1
+  num_crop_samples: 2
+  
+# Data preprocessing
+preprocessing:
+  intensity_range:
+    a_min: -175  # CT window min (HU)
+    a_max: 250   # CT window max (HU)
+    b_min: 0
+    b_max: 1
+  spacing:
+    # Target voxel spacing - adjust for your data
+    pixdim: [1.5, 1.5, 1.5]
+    mode: ["bilinear", "nearest"]
+  crop_size: [96, 96, 96]
+  
+# Data augmentation
+augmentation:
+  flip_prob: 0.10
+  rotation_prob: 0.5
+  rotation_range: [-15, 15]
+  intensity_shift:
+    offsets: 0.10
+    prob: 0.50
+
+# Experiment settings
+experiment:
+  run_name: "SwinUNETR"
+  fold: 0
+  visualize_sample: false
+  seed: 0
+  
+# Weights & Biases settings (optional)
+wandb:
+  enabled: true
+  project: "rpci-segmentation"
+  entity: null  # Set to your wandb username/team
+  log_freq: 1
+  watch_model: false
+

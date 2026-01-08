@@ -205,3 +205,38 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# ======================================
+# Project-specific ignores
+# ======================================
+
+# Data files (too large for git)
+*.nii
+*.nii.gz
+*.dcm
+data/
+dataset/
+
+# Model weights
+*.pth
+*.pt
+*.ckpt
+weights/
+checkpoints/
+
+# Results and outputs
+results/
+outputs/
+predictions/
+logs/
+
+# Wandb
+wandb/
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
