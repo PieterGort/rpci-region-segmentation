@@ -1,54 +1,85 @@
-# RPCI Region Segmentation
+# Deep Learning–Based Segmentation of Radiological Peritoneal Cancer Index Regions
 
-Automated CT segmentation of peritoneal metastases regions using deep learning. This repository contains code for training and evaluating two state-of-the-art 3D medical image segmentation architectures:
+Automated CT segmentation of **radiological Peritoneal Cancer Index (rPCI) regions** using deep learning. This repository contains the code for training and evaluating segmentation models as described in our paper.
 
-- **SwinUNETR** — Transformer-based architecture using shifted windows (MONAI implementation)
-- **nnU-Net** — Self-configuring framework for biomedical image segmentation
+> **Deep Learning–Based Segmentation of Radiological Peritoneal Cancer Index Regions in Abdominal Imaging**  
+> Pieter C. Gort, Lotte J.S. Ewals, Marion W. Tops-Welten, Cris H.B. Claessens, Joost Nederend, Fons van der Sommen  
+> *Department of Electrical Engineering, Eindhoven University of Technology & Catharina Hospital Eindhoven*
 
 ## Overview
 
-This repository accompanies the paper:
+Peritoneal metastases (PM) are currently assessed using diagnostic laparoscopy to determine Sugarbaker's Peritoneal Cancer Index (PCI), which divides the abdomen into **13 regions** and scores each based on tumor size. A recent [consensus study](https://doi.org/10.1007/s00261-024-04250-y) defined 3D regions for a **radiological PCI (rPCI)**, enabling standardized imaging-based assessment.
 
-> **[Your Paper Title]**  
-> Authors: [Your Names]  
-> Published in: [Journal/Conference, Year]
+This repository provides:
+- **SwinUNETR** implementation using MONAI
+- **nnU-Net** training pipeline (following the [official nnU-Net framework](https://github.com/MIC-DKFZ/nnUNet))
+- Analysis scripts for computing segmentation metrics and interobserver variability
+- Preprocessing and postprocessing utilities
 
-We provide complete training pipelines, configuration files, and evaluation scripts to reproduce our results on peritoneal region segmentation from abdominal CT scans.
+### rPCI Regions (0–12)
+
+| Region | Name | Region | Name |
+|--------|------|--------|------|
+| 0 | Central | 7 | Right lower |
+| 1 | Right upper | 8 | Right flank |
+| 2 | Epigastrium | 9 | Upper jejunum |
+| 3 | Left upper | 10 | Lower jejunum |
+| 4 | Left flank | 11 | Upper ileum |
+| 5 | Left lower | 12 | Lower ileum |
+| 6 | Pelvis | | |
+
+## Results
+
+Our experiments on 62 CT scans with expert annotations showed:
+
+| Model | Dice Score | HD95 (mm) | ASD (mm) |
+|-------|------------|-----------|----------|
+| **nnU-Net** | **0.82 ± 0.15** | 13.73 ± 12.03 | 4.10 ± 5.03 |
+| SwinUNETR | 0.76 ± 0.18 | 16.82 ± 14.21 | 5.23 ± 6.12 |
+| Interobserver | 0.88 ± 0.02 | 11.7 ± 3.3 | 2.5 ± 0.6 |
 
 ## Repository Structure
 
 ```
 rpci-region-segmentation/
-├── swinunetr/              # SwinUNETR implementation
-│   ├── main.py             # Training entry point
-│   ├── train.py            # Training loop
-│   ├── predict.py          # Inference script
-│   ├── dataset.py          # Data loading utilities
-│   └── utils.py            # Helper functions
+├── swinunetr/                   # SwinUNETR implementation (MONAI)
+│   ├── main.py                  # Training entry point
+│   ├── train.py                 # Training loop
+│   ├── model.py                 # Model initialization
+│   ├── dataset.py               # Data loading utilities
+│   ├── predict.py               # Inference script
+│   └── utils.py                 # Visualization & logging
 │
-├── nnunet/                 # nnU-Net modifications
-│   └── ...                 # Custom trainers and configurations
+├── nnunet/                      # nnU-Net utilities
+│   └── README.md                # nnU-Net setup guide
 │
-├── configs/                # Configuration files
-│   ├── swinunetr/          # SwinUNETR configs
-│   └── nnunet/             # nnU-Net configs
+├── analysis/                    # Evaluation scripts
+│   ├── compute_metrics.py       # Dice, HD95, ASD computation
+│   └── observer_variability.py  # Interobserver agreement
 │
-├── scripts/                # Utility scripts
-│   ├── preprocess.py       # Data preprocessing
-│   └── evaluate.py         # Evaluation metrics
+├── preprocessing/               # Data preprocessing
+│   ├── convert_to_nnunet.py     # Convert to nnU-Net format
+│   ├── dilate_segmentations.py  # Mask dilation
+│   └── crop_to_bounds.py        # Crop to segmentation bounds
 │
-├── experiments/            # Experiment reproduction
-│   └── run_all.py          # Reproduce paper results
+├── postprocessing/              # Post-processing utilities
+│   ├── postprocess.py           # Connected component filtering
+│   └── resample_to_original.py  # Resample predictions
 │
-└── docs/                   # Documentation
-    ├── installation.md     # Detailed installation guide
-    ├── data_format.md      # Data preparation instructions
-    └── experiments.md      # Experiment details
+├── visualization/               # Plotting utilities
+│   └── visualization.py         # Segmentation overlays & metrics plots
+│
+├── configs/                     # Configuration files
+│   └── swinunetr/default.yaml
+│
+└── docs/                        # Documentation
+    ├── installation.md
+    └── data_format.md
 ```
 
 ## Quick Start
 
-### 1. Installation
+### Installation
 
 ```bash
 # Clone the repository
@@ -66,104 +97,125 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 pip install -r requirements.txt
 ```
 
-### 2. Data Preparation
+### Training with nnU-Net (Recommended)
 
-Organize your data in the following structure:
-
-```
-/path/to/data/
-├── imagesTr/
-│   ├── case_001_0000.nii.gz
-│   ├── case_002_0000.nii.gz
-│   └── ...
-├── labelsTr/
-│   ├── case_001.nii.gz
-│   ├── case_002.nii.gz
-│   └── ...
-└── dataset.json
-```
-
-See [docs/data_format.md](docs/data_format.md) for detailed data preparation instructions.
-
-### 3. Training
-
-#### SwinUNETR
+For nnU-Net training, follow the [official nnU-Net documentation](https://github.com/MIC-DKFZ/nnUNet):
 
 ```bash
-python swinunetr/main.py \
-    --config configs/swinunetr/default.yaml \
-    --data-dir /path/to/data \
-    --output-dir ./results/swinunetr
-```
+# 1. Install nnU-Net
+pip install nnunetv2
 
-#### nnU-Net
-
-```bash
-# Set environment variables
+# 2. Set environment variables
 export nnUNet_raw="/path/to/nnUNet_raw"
 export nnUNet_preprocessed="/path/to/nnUNet_preprocessed"
 export nnUNet_results="/path/to/nnUNet_results"
 
-# Plan and preprocess
-nnUNetv2_plan_and_preprocess -d DATASET_ID --verify_dataset_integrity
+# 3. Convert your data to nnU-Net format
+python preprocessing/convert_to_nnunet.py \
+    --images_dir /path/to/images \
+    --segmentations_dir /path/to/labels \
+    --output_dir $nnUNet_raw \
+    --dataset_name Dataset001_rPCI
 
-# Train
-nnUNetv2_train DATASET_ID 3d_fullres FOLD
+# 4. Plan and preprocess
+nnUNetv2_plan_and_preprocess -d 001 --verify_dataset_integrity
+
+# 5. Train (5-fold cross-validation)
+nnUNetv2_train 001 3d_fullres 0
+nnUNetv2_train 001 3d_fullres 1
+nnUNetv2_train 001 3d_fullres 2
+nnUNetv2_train 001 3d_fullres 3
+nnUNetv2_train 001 3d_fullres 4
 ```
 
-### 4. Inference
+### Training with SwinUNETR
 
 ```bash
-# SwinUNETR
-python swinunetr/predict.py \
-    --model-path ./results/swinunetr/best_model.pth \
-    --input-dir /path/to/test/images \
-    --output-dir ./predictions
-
-# nnU-Net
-nnUNetv2_predict -i /path/to/test/images -o ./predictions -d DATASET_ID -c 3d_fullres
+python -m swinunetr.main \
+    --config configs/swinunetr/default.yaml \
+    --data-dir /path/to/data \
+    --results-dir ./results/swinunetr \
+    --fold 0
 ```
 
-## Docker
+### Evaluation
 
-For reproducibility, we provide Docker containers:
+Compute segmentation metrics (Dice, HD95, ASD):
 
 ```bash
-# Build
-docker build -t rpci-segmentation .
-
-# Run SwinUNETR training
-docker run --gpus all -v /path/to/data:/data rpci-segmentation \
-    python swinunetr/main.py --data-dir /data
+python analysis/compute_metrics.py \
+    --gt-folder /path/to/ground_truth \
+    --pred-folder /path/to/predictions \
+    --output-dir ./results/metrics
 ```
 
-## Results
+Compute interobserver variability:
 
-| Model | Dice Score | HD95 (mm) | Training Time |
-|-------|------------|-----------|---------------|
-| SwinUNETR | X.XX ± X.XX | X.XX ± X.XX | ~Xh |
-| nnU-Net 3D | X.XX ± X.XX | X.XX ± X.XX | ~Xh |
+```bash
+python analysis/observer_variability.py \
+    --segmentations-folder /path/to/multi_observer_annotations
+```
 
-## Requirements
+## Data Format
 
-- Python ≥ 3.10
-- PyTorch ≥ 2.0
-- CUDA ≥ 11.8
-- MONAI ≥ 1.3 (for SwinUNETR)
-- nnU-Net v2 (for nnU-Net experiments)
+### Input Data Structure
 
-See [requirements.txt](requirements.txt) for complete dependencies.
+```
+/path/to/data/
+├── Scan_001_TS.nii.gz              # CT scan (portal venous phase)
+├── Scan_002_TS.nii.gz
+├── Segmentations_001_all.nii.gz    # rPCI region labels (0-13)
+├── Segmentations_002_all.nii.gz
+└── ...
+```
+
+### Label Encoding
+
+| Label | Region Name |
+|-------|-------------|
+| 0 | Background |
+| 1 | Region 0 (Central) |
+| 2 | Region 1 (Right upper) |
+| ... | ... |
+| 13 | Region 12 (Lower ileum) |
+
+## Preprocessing Pipeline
+
+1. **Crop to segmentation bounds** with 15mm margin
+2. **Dilate segmentation masks** by 2mm (compensate for under-segmentation)
+3. **Convert to nnU-Net format** (or SwinUNETR format)
+
+```bash
+# Full preprocessing pipeline
+python preprocessing/crop_to_bounds.py --input-dir /raw/data --output-dir /cropped/data
+python preprocessing/dilate_segmentations.py --input-dir /cropped/data --expansion-mm 2
+python preprocessing/convert_to_nnunet.py --images_dir /cropped/data --output_dir /nnUNet_raw
+```
 
 ## Citation
 
 If you use this code in your research, please cite:
 
 ```bibtex
-@article{yourpaper2026,
-  title={Your Paper Title},
-  author={Your Names},
-  journal={Journal Name},
+@article{gort2026rpci,
+  title={Deep Learning–Based Segmentation of Radiological Peritoneal Cancer Index Regions in Abdominal Imaging},
+  author={Gort, Pieter C. and Ewals, Lotte J.S. and Tops-Welten, Marion W. and Claessens, Cris H.B. and Nederend, Joost and van der Sommen, Fons},
+  journal={International Journal of Computer Assisted Radiology and Surgery},
   year={2026}
+}
+```
+
+Also cite nnU-Net if you use it:
+
+```bibtex
+@article{isensee2021nnunet,
+  title={nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation},
+  author={Isensee, Fabian and Jaeger, Paul F and Kohl, Simon AA and Petersen, Jens and Maier-Hein, Klaus H},
+  journal={Nature methods},
+  volume={18},
+  number={2},
+  pages={203--211},
+  year={2021}
 }
 ```
 
@@ -173,11 +225,14 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## Acknowledgements
 
-This work builds upon:
+- [nnU-Net](https://github.com/MIC-DKFZ/nnUNet) - Self-configuring medical image segmentation
 - [MONAI](https://monai.io/) - Medical Open Network for Artificial Intelligence
-- [nnU-Net](https://github.com/MIC-DKFZ/nnUNet) - Self-configuring method for biomedical image segmentation
-- [SwinUNETR](https://arxiv.org/abs/2201.01266) - Swin Transformers for Semantic Segmentation of Brain Tumors
+- [SwinUNETR](https://arxiv.org/abs/2201.01266) - Swin Transformers for medical imaging
+- Catharina Cancer Institute, Catharina Hospital Eindhoven
+- Hanarth Fund for supporting AI research in oncology
+- SURF for access to the Snellius supercomputer
 
 ## Contact
 
-For questions or issues, please open a GitHub issue or contact [your.email@tue.nl].
+For questions or issues, please open a GitHub issue or contact:
+- Pieter Gort: p.c.gort@tue.nl
