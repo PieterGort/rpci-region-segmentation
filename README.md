@@ -8,7 +8,7 @@ Automated CT segmentation of **radiological Peritoneal Cancer Index (rPCI) regio
 
 ## Overview
 
-Peritoneal metastases (PM) are currently assessed using diagnostic laparoscopy to determine Sugarbaker's Peritoneal Cancer Index (PCI), which divides the abdomen into **13 regions** and scores each based on tumor size. A recent [consensus study](https://doi.org/10.1007/s00261-024-04250-y) defined 3D regions for a **radiological PCI (rPCI)**, enabling standardized imaging-based assessment.
+Peritoneal metastases (PM) are currently assessed using diagnostic laparoscopy to determine Sugarbaker's Peritoneal Cancer Index (PCI), which divides the abdomen into **13 regions** and scores each based on tumor size. A recent [Delphi consensus study](https://doi.org/10.1007/s00330-025-11762-3) defined 3D regions for a **radiological PCI (rPCI)**, enabling standardized imaging-based assessment.
 
 This repository provides:
 - **SwinUNETR** implementation using MONAI
@@ -121,11 +121,11 @@ python preprocessing/convert_to_nnunet.py \
 nnUNetv2_plan_and_preprocess -d 001 --verify_dataset_integrity
 
 # 5. Train (5-fold cross-validation)
-nnUNetv2_train 001 3d_fullres 0
-nnUNetv2_train 001 3d_fullres 1
-nnUNetv2_train 001 3d_fullres 2
-nnUNetv2_train 001 3d_fullres 3
-nnUNetv2_train 001 3d_fullres 4
+nnUNetv2_train 001 3d_lowres 0
+nnUNetv2_train 001 3d_lowres 1
+nnUNetv2_train 001 3d_lowres 2
+nnUNetv2_train 001 3d_lowres 3
+nnUNetv2_train 001 3d_lowres 4
 ```
 
 ### Training with SwinUNETR
@@ -205,8 +205,9 @@ If you use this code in your research, please cite:
 }
 ```
 
-Also cite nnU-Net if you use it:
+Please also cite the following if you use the respective components:
 
+**nnU-Net:**
 ```bibtex
 @article{isensee2021nnunet,
   title={nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation},
@@ -216,6 +217,42 @@ Also cite nnU-Net if you use it:
   number={2},
   pages={203--211},
   year={2021}
+}
+```
+
+**SwinUNETR:**
+```bibtex
+@article{hatamizadeh2022swinunetr,
+  title={Swin UNETR: Swin Transformers for Semantic Segmentation of Brain Tumors in MRI Images},
+  author={Hatamizadeh, Ali and Nath, Vishwesh and Tang, Yucheng and Yang, Dong and Roth, Holger R and Xu, Daguang},
+  journal={Lecture Notes in Computer Science},
+  volume={12962},
+  pages={272--284},
+  year={2022},
+  doi={10.1007/978-3-031-08999-2_22}
+}
+```
+
+**MONAI:**
+```bibtex
+@misc{cardoso2022monai,
+  title={MONAI: An open-source framework for deep learning in healthcare}, 
+  author={M. Jorge Cardoso and Wenqi Li and Richard Brown and others},
+  year={2022},
+  eprint={2211.02701},
+  archivePrefix={arXiv},
+  url={https://arxiv.org/abs/2211.02701}
+}
+```
+
+**rPCI Region Definitions:**
+```bibtex
+@article{tops2025defining,
+  title={Defining region boundaries to assess the peritoneal cancer index on imaging: a Delphi study},
+  author={Tops-Welten, Marion W and Ewals, Lotte JS and van Hellemond, Irene EG and others},
+  journal={European Radiology},
+  year={2025},
+  doi={10.1007/s00330-025-11762-3}
 }
 ```
 
