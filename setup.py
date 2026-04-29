@@ -12,7 +12,7 @@ setup(
     name="rpci-region-segmentation",
     version="1.0.0",
     author="Pieter Gort",
-    author_email="your.email@tue.nl",
+    author_email="p.c.gort@tue.nl",
     description="CT segmentation of peritoneal regions using SwinUNETR and nnU-Net",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -22,13 +22,14 @@ setup(
         "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
         "Intended Audience :: Healthcare Industry",
-        "License :: OSI Approved :: Apache Software License",
+        "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Scientific/Engineering :: Medical Science Apps.",
     ],
+    license="MIT",
     python_requires=">=3.10",
     install_requires=requirements,
     extras_require={
@@ -37,6 +38,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
+            "rpci-preprocess=scripts.run_preprocessing:main",
             "rpci-train=swinunetr.main:main",
             "rpci-predict=swinunetr.predict:main",
         ],

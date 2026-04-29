@@ -143,7 +143,7 @@ def generate_dataset_json(output_folder, num_training_cases, labels=None):
         "name": os.path.basename(output_folder),
         "description": "rPCI region segmentation from CT scans",
         "reference": "Eindhoven University of Technology",
-        "licence": "See LICENSE",
+        "licence": "MIT License",
         "release": "1.0",
         "overwrite_image_reader_writer": "SimpleITKIO"
     }

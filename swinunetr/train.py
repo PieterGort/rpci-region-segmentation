@@ -80,7 +80,7 @@ def train(
             x = batch["image"].to(device)
             y = batch["label"].to(device)
             
-            with torch.autocast("cuda"):
+            with torch.autocast(device_type=device.type, enabled=device.type == "cuda"):
                 logit_map = model(x)
                 loss = loss_function(logit_map, y)
             
@@ -192,6 +192,7 @@ def validation(
         Tuple of (mean_dice, mean_loss, per_label_metrics)
     """
     model.eval()
+    device = next(model.parameters()).device
     total_val_loss = 0
     val_steps = 0
     
@@ -210,10 +211,10 @@ def validation(
     with torch.no_grad():
         for batch in epoch_iterator_val:
             val_steps += 1
-            val_inputs = batch["image"].cuda()
-            val_labels = batch["label"].cuda()
+            val_inputs = batch["image"].to(device)
+            val_labels = batch["label"].to(device)
             
-            with torch.autocast("cuda"):
+            with torch.autocast(device_type=device.type, enabled=device.type == "cuda"):
                 val_outputs = sliding_window_inference(
                     val_inputs, (96, 96, 96), num_crop_samples, model
                 )

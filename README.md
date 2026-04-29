@@ -38,6 +38,8 @@ Our experiments on 62 CT scans with expert annotations showed:
 | SwinUNETR | 0.76 ± 0.18 | 16.82 ± 14.21 | 5.23 ± 6.12 |
 | Interobserver | 0.88 ± 0.02 | 11.7 ± 3.3 | 2.5 ± 0.6 |
 
+The source CT scans, annotations, and exact cross-validation splits are not distributed with this repository because they contain confidential clinical data. The code is provided for method transparency and for training/evaluation on locally available data in the documented format. Trained model weights may be published separately in a future release for inference use.
+
 ## Repository Structure
 
 ```
@@ -62,12 +64,16 @@ rpci-region-segmentation/
 │   ├── dilate_segmentations.py  # Mask dilation
 │   └── crop_to_bounds.py        # Crop to segmentation bounds
 │
+├── scripts/
+│   └── run_preprocessing.py     # End-to-end preprocessing wrapper
+│
 ├── postprocessing/              # Post-processing utilities
 │   ├── postprocess.py           # Connected component filtering
 │   └── resample_to_original.py  # Resample predictions
 │
 ├── visualization/               # Plotting utilities
-│   └── visualization.py         # Segmentation overlays & metrics plots
+│   ├── plot_results.py          # Lightweight segmentation overlays
+│   └── visualization.py         # Paper plotting utilities
 │
 ├── configs/                     # Configuration files
 │   └── swinunetr/default.yaml
@@ -97,7 +103,7 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 pip install -r requirements.txt
 ```
 
-### Training with nnU-Net (Recommended)
+### Training with nnU-Net
 
 For nnU-Net training, follow the [official nnU-Net documentation](https://github.com/MIC-DKFZ/nnUNet):
 
@@ -137,6 +143,8 @@ python -m swinunetr.main \
     --results-dir ./results/swinunetr \
     --fold 0
 ```
+
+Weights & Biases logging is disabled by default. To enable it, set `wandb.enabled: true` in `configs/swinunetr/default.yaml` and configure your W&B account outside the repository.
 
 ### Evaluation
 
@@ -181,15 +189,23 @@ python analysis/observer_variability.py \
 
 ## Preprocessing Pipeline
 
-1. **Crop to segmentation bounds** with 15mm margin
-2. **Dilate segmentation masks** by 2mm (compensate for under-segmentation)
-3. **Convert to nnU-Net format** (or SwinUNETR format)
+1. **Expand and combine segmentation masks** by 2mm (compensate for under-segmentation)
+2. **Optionally crop to segmentation bounds** with a configurable voxel/slice margin
+3. **Convert to nnU-Net format** (or use the processed folder with SwinUNETR)
 
 ```bash
 # Full preprocessing pipeline
-python preprocessing/crop_to_bounds.py --input-dir /raw/data --output-dir /cropped/data
-python preprocessing/dilate_segmentations.py --input-dir /cropped/data --expansion-mm 2
-python preprocessing/convert_to_nnunet.py --images_dir /cropped/data --output_dir /nnUNet_raw
+python scripts/run_preprocessing.py \
+    --input-folder /path/to/raw_data \
+    --output-folder /path/to/processed_data \
+    --expansion 2 \
+    --crop-margin 5
+
+python preprocessing/convert_to_nnunet.py \
+    --images_dir /path/to/processed_data \
+    --segmentations_dir /path/to/processed_data \
+    --output_dir /path/to/nnUNet_raw \
+    --dataset_name Dataset001_rPCI
 ```
 
 ## Citation
@@ -258,7 +274,7 @@ Please also cite the following if you use the respective components:
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
 

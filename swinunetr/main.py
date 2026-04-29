@@ -11,6 +11,7 @@ Usage:
 import os
 import argparse
 import json
+import random
 import yaml
 import torch
 import numpy as np
@@ -219,10 +220,13 @@ def main():
     args = parse_args()
     
     # Set random seeds for reproducibility
+    random.seed(args.seed)
+    np.random.seed(args.seed)
     torch.manual_seed(args.seed)
-    torch.cuda.manual_seed(args.seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(args.seed)
     torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = True
+    torch.backends.cudnn.benchmark = False
 
     # Load configuration
     config = load_config(args.config)
@@ -245,7 +249,7 @@ def main():
     
     # Initialize wandb (optional)
     wandb_config = config.get('wandb', {})
-    if wandb_config.get('enabled', True):
+    if wandb_config.get('enabled', False):
         wandb.init(
             project=wandb_config.get('project', 'rpci-segmentation'),
             entity=wandb_config.get('entity'),
@@ -317,7 +321,7 @@ def main():
         lr=learning_rate,
         weight_decay=weight_decay
     )
-    scaler = torch.amp.GradScaler()
+    scaler = torch.cuda.amp.GradScaler(enabled=device.type == "cuda")
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer, T_max=args.max_iter // len(train_loader)
     )
@@ -385,7 +389,7 @@ def main():
     print(f"Fold {fold_idx} - Overall Mean Dice: {overall_mean:.4f} ± {overall_std:.4f}")
     
     # Finish wandb
-    if wandb_config.get('enabled', True):
+    if wandb_config.get('enabled', False):
         wandb.finish()
 
 

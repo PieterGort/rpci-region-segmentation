@@ -1,6 +1,6 @@
 # nnU-Net Integration
 
-This directory contains our modifications and custom configurations for [nnU-Net v2](https://github.com/MIC-DKFZ/nnUNet).
+This directory documents how to use [nnU-Net v2](https://github.com/MIC-DKFZ/nnUNet) with the rPCI data format. The actual nnU-Net framework is installed separately; this repository provides a dataset conversion utility rather than vendoring nnU-Net code.
 
 ## Setup
 
@@ -25,10 +25,11 @@ export nnUNet_results="/path/to/nnUNet_results"
 Convert your data to nnU-Net format:
 
 ```bash
-python scripts/convert_to_nnunet.py \
-    --input-dir /path/to/your/data \
-    --dataset-id 001 \
-    --dataset-name RPCI
+python preprocessing/convert_to_nnunet.py \
+    --images_dir /path/to/processed_data \
+    --segmentations_dir /path/to/processed_data \
+    --output_dir "$nnUNet_raw" \
+    --dataset_name Dataset001_rPCI
 ```
 
 ## Usage
@@ -42,11 +43,8 @@ nnUNetv2_plan_and_preprocess -d DATASET_ID --verify_dataset_integrity
 ### Training
 
 ```bash
-# Train 3D full resolution
+# Train one fold. Use the configuration selected during nnU-Net planning.
 nnUNetv2_train DATASET_ID 3d_fullres FOLD
-
-# Train with our custom trainer (if available)
-nnUNetv2_train DATASET_ID 3d_fullres FOLD -tr nnUNetTrainerCustom
 ```
 
 ### Inference
@@ -60,16 +58,9 @@ nnUNetv2_predict \
     -f FOLD
 ```
 
-## Custom Trainers
+## Notes
 
-If you have custom trainers, place them in this directory and reference them using:
-
-```bash
-export nnUNet_trainer_path="/path/to/rpci-region-segmentation/nnunet"
-```
-
-## Our Modifications
-
-- `custom_trainer.py`: Custom training configurations
-- `dataset_conversion.py`: Data conversion utilities
+- The clinical dataset and exact paper splits are confidential and are not distributed in this repository.
+- No custom nnU-Net trainer is included here. Use the official nnU-Net v2 trainers unless you add and document your own.
+- The conversion utility lives at `preprocessing/convert_to_nnunet.py`.
 

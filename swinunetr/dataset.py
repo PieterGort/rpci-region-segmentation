@@ -268,7 +268,7 @@ def generate_dataset_json(
     return {
         "description": description,
         "labels": labels,
-        "licence": "See LICENSE",
+        "licence": "MIT License",
         "modality": {"0": "CT"},
         "name": description,
         "numTest": 0,

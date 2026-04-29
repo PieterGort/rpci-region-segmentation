@@ -6,6 +6,8 @@ This guide describes the expected data format for both SwinUNETR and nnU-Net.
 
 Both models expect 3D NIfTI files (`.nii.gz`) containing CT scans and corresponding segmentation masks.
 
+The study data and exact paper splits are not included in this repository because they contain confidential clinical data. Use the formats below for your own data, and provide your own split file when training SwinUNETR.
+
 ## SwinUNETR Format
 
 ```
@@ -21,7 +23,7 @@ Both models expect 3D NIfTI files (`.nii.gz`) containing CT scans and correspond
 ├── imagesTs/                    # Optional: Test images
 │   └── ...
 └── dataset/
-    └── splits_final.json        # Cross-validation splits
+    └── splits_final.json        # Cross-validation splits, supplied by the user
 ```
 
 ### Splits File Format
@@ -87,27 +89,31 @@ nnUNet_raw/
 2. **Intensity normalization**: Window/level for CT (-175 to 250 HU)
 3. **Cropping**: Remove empty regions around the body
 
-### Using provided preprocessing script:
+### Using the provided preprocessing script
 
 ```bash
-python scripts/preprocess.py \
-    --input-dir /path/to/raw/data \
-    --output-dir /path/to/processed/data \
-    --spacing 1.0 1.0 1.0 \
-    --intensity-range -175 250
+python scripts/run_preprocessing.py \
+    --input-folder /path/to/raw_data \
+    --output-folder /path/to/processed_data \
+    --expansion 2 \
+    --crop-margin 5 \
+    --target-spacing 1.0 1.0 1.0
 ```
+
+Raw preprocessing expects pairs named `Scan_{case_id}_TS.nii.gz` and `Segmentations_{case_id}_all.seg.nrrd`. Pass `--fix-names` only if you want the script to move loose files into that naming convention.
 
 ## Converting Your Data
 
 If your data is in a different format, use our conversion utilities:
 
 ```python
-from scripts.convert import convert_to_nnunet_format
+from preprocessing.convert_to_nnunet import convert_to_nnunet_format
 
 convert_to_nnunet_format(
-    input_dir="/path/to/your/data",
-    output_dir="/path/to/nnUNet_raw/Dataset001_RPCI",
-    dataset_name="RPCI"
+    images_dir="/path/to/processed_data",
+    segmentations_dir="/path/to/processed_data",
+    output_dir="/path/to/nnUNet_raw",
+    dataset_name="Dataset001_RPCI",
 )
 ```
 

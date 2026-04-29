@@ -52,7 +52,7 @@ experiment:
   
 # Weights & Biases settings (optional)
 wandb:
-  enabled: true
+  enabled: false
   project: "rpci-segmentation"
   entity: null  # Set to your wandb username/team
   log_freq: 1
