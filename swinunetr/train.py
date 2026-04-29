@@ -7,13 +7,26 @@ This module implements the training and validation loops for SwinUNETR.
 import os
 import numpy as np
 import torch
-import wandb
 from tqdm import tqdm
 from monai.inferers import sliding_window_inference
 from monai.data import decollate_batch
 from monai.transforms import AsDiscrete
 
 from .utils import plot_training_validation_metrics, log_fold_results_to_csv
+
+try:
+    import wandb
+except ImportError:
+    wandb = None
+
+
+def _log_wandb(data, step):
+    if wandb is None:
+        return
+    try:
+        wandb.log(data, step=step)
+    except Exception:
+        pass
 
 
 def train(
@@ -95,14 +108,10 @@ def train(
                 f"Training ({global_step} / {args.max_iter} Steps) (loss={loss:2.5f})"
             )
             
-            # Log to wandb
-            try:
-                wandb.log({
-                    "train/loss": loss.item(),
-                    "train/learning_rate": optimizer.param_groups[0]['lr']
-                }, step=global_step)
-            except wandb.errors.Error:
-                pass  # wandb not initialized
+            _log_wandb({
+                "train/loss": loss.item(),
+                "train/learning_rate": optimizer.param_groups[0]['lr']
+            }, step=global_step)
             
             # Validation
             if (global_step % args.eval_num == 0 and global_step != 0) or global_step == args.max_iter:
@@ -123,14 +132,10 @@ def train(
                 steps_validated_at.append(global_step)
                 lr_history.append(scheduler.get_last_lr()[0])
                 
-                # Log validation to wandb
-                try:
-                    wandb.log({
-                        "val/dice": dice_val,
-                        "val/loss": val_loss
-                    }, step=global_step)
-                except wandb.errors.Error:
-                    pass
+                _log_wandb({
+                    "val/dice": dice_val,
+                    "val/loss": val_loss
+                }, step=global_step)
                 
                 if dice_val > dice_val_best:
                     dice_val_best = dice_val

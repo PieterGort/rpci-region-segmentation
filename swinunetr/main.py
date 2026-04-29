@@ -15,12 +15,16 @@ import random
 import yaml
 import torch
 import numpy as np
-import wandb
 
 from .dataset import load_predefined_splits
 from .train import train
 from .model import initialize_model
 from .utils import plot_training_validation_metrics, plot_samples
+
+try:
+    import wandb
+except ImportError:
+    wandb = None
 
 from monai.losses import DiceCELoss
 from monai.transforms import (
@@ -250,6 +254,11 @@ def main():
     # Initialize wandb (optional)
     wandb_config = config.get('wandb', {})
     if wandb_config.get('enabled', False):
+        if wandb is None:
+            raise ImportError(
+                "Weights & Biases logging is enabled, but wandb is not installed. "
+                "Install wandb or set wandb.enabled: false in the config."
+            )
         wandb.init(
             project=wandb_config.get('project', 'rpci-segmentation'),
             entity=wandb_config.get('entity'),
@@ -389,7 +398,7 @@ def main():
     print(f"Fold {fold_idx} - Overall Mean Dice: {overall_mean:.4f} ± {overall_std:.4f}")
     
     # Finish wandb
-    if wandb_config.get('enabled', False):
+    if wandb_config.get('enabled', False) and wandb is not None:
         wandb.finish()
 
 

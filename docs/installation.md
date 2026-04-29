@@ -25,6 +25,10 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
 
 # Install project dependencies
 pip install -r requirements.txt
+
+# Install the repository in editable mode.
+# This exposes commands such as rpci-preprocess, rpci-train, and rpci-predict.
+pip install -e .
 ```
 
 ## Option 2: Docker
@@ -58,20 +62,42 @@ Add these to your `~/.bashrc` or `~/.zshrc` for persistence.
 
 ## Verifying Installation
 
-```python
-# Test PyTorch and CUDA
+After installing the package, verify that the command line entry points and core modules import correctly:
+
+```bash
+rpci-preprocess --help
+rpci-train --help
+rpci-predict --help
+
+python -m preprocessing.convert_to_nnunet --help
+python -m analysis.compute_metrics --help
+python -m visualization.plot_results --help
+```
+
+You can also check the main deep learning dependencies:
+
+```bash
+python - <<'PY'
 import torch
+import monai
+
 print(f"PyTorch version: {torch.__version__}")
 print(f"CUDA available: {torch.cuda.is_available()}")
 print(f"CUDA version: {torch.version.cuda}")
-
-# Test MONAI
-import monai
 print(f"MONAI version: {monai.__version__}")
+PY
+```
 
-# Test nnU-Net
+If you installed nnU-Net, verify its environment variables separately:
+
+```bash
+python - <<'PY'
 from nnunetv2.paths import nnUNet_raw, nnUNet_preprocessed, nnUNet_results
-print(f"nnUNet paths configured: {nnUNet_raw is not None}")
+
+print(f"nnUNet_raw: {nnUNet_raw}")
+print(f"nnUNet_preprocessed: {nnUNet_preprocessed}")
+print(f"nnUNet_results: {nnUNet_results}")
+PY
 ```
 
 ## Troubleshooting

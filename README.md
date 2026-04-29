@@ -42,7 +42,7 @@ Our experiments on 62 CT scans with expert annotations showed:
 
 ![Example rPCI segmentation analysis across coronal, axial, and sagittal planes](full_segmentation_analysis_3planes.png)
 
-The source CT scans, annotations, and exact cross-validation splits are not distributed with this repository because they contain confidential clinical data. The code is provided for method transparency and for training/evaluation on locally available data in the documented format. Trained model weights may be published separately in a future release for inference use.
+The source CT scans, annotations, and exact cross-validation splits are not distributed with this repository because they contain confidential clinical data. This repository is intended as a research-methods reference: it documents the preprocessing, training, evaluation, and visualization code used in the study, but it is not a turnkey reproduction package with public data. Trained model weights may be published separately in a future release for inference use.
 
 ## Repository Structure
 
@@ -174,12 +174,14 @@ python analysis/observer_variability.py \
 
 ```
 /path/to/data/
-├── Scan_001_TS.nii.gz              # CT scan (portal venous phase)
+├── Scan_001_TS.nii.gz                         # CT scan (portal venous phase)
 ├── Scan_002_TS.nii.gz
-├── Segmentations_001_all.nii.gz    # rPCI region labels (0-13)
+├── Segmentations_001_all.nii.gz               # rPCI region labels (0-13)
 ├── Segmentations_002_all.nii.gz
 └── ...
 ```
+
+Use the same case identifier in each image/segmentation pair: `Scan_{case_id}_TS.nii.gz` and `Segmentations_{case_id}_all.nii.gz`. If you run the provided dilation pipeline, its processed labels are saved as `Segmentations_{case_id}_all_expanded.nii.gz`.
 
 ### Label Encoding
 
@@ -196,6 +198,8 @@ python analysis/observer_variability.py \
 1. **Expand and combine segmentation masks** by 2mm (compensate for under-segmentation)
 2. **Optionally crop to segmentation bounds** with a configurable voxel/slice margin
 3. **Convert to nnU-Net format** (or use the processed folder with SwinUNETR)
+
+The dilation step is part of the preprocessing used for the reported experiments and can materially affect the training labels. If your labels are already finalized NIfTI masks, document whether they are raw or expanded and keep the naming consistent with the data format section.
 
 ```bash
 # Full preprocessing pipeline
