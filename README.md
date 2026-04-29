@@ -38,6 +38,10 @@ Our experiments on 62 CT scans with expert annotations showed:
 | SwinUNETR | 0.76 ± 0.18 | 16.82 ± 14.21 | 5.23 ± 6.12 |
 | Interobserver | 0.88 ± 0.02 | 11.7 ± 3.3 | 2.5 ± 0.6 |
 
+### Example Segmentation
+
+![Example rPCI segmentation analysis across coronal, axial, and sagittal planes](full_segmentation_analysis_3planes.png)
+
 The source CT scans, annotations, and exact cross-validation splits are not distributed with this repository because they contain confidential clinical data. The code is provided for method transparency and for training/evaluation on locally available data in the documented format. Trained model weights may be published separately in a future release for inference use.
 
 ## Repository Structure
