@@ -150,6 +150,47 @@ python -m swinunetr.main \
 
 Weights & Biases logging is disabled by default. To enable it, set `wandb.enabled: true` in `configs/swinunetr/default.yaml` and configure your W&B account outside the repository.
 
+### Inference with Released nnU-Net Weights
+
+When pretrained nnU-Net weights are available from the repository releases, they can be installed into a local nnU-Net environment and used for inference. The `pm_model_101.zip` release asset contains the 5-fold `Dataset101_PM` model for segmenting all thirteen rPCI regions listed above, using the `3d_lowres` nnU-Net configuration.
+
+Download the model from the **Releases** section on the GitHub repository page, in here you find: `pm_model_101.zip` attached as the downloadable zip file. Then install it into your local nnU-Net results folder:
+
+```bash
+# Install nnU-Net v2
+pip install nnunetv2
+
+# Configure nnU-Net paths
+export nnUNet_raw="/path/to/nnUNet_raw"
+export nnUNet_preprocessed="/path/to/nnUNet_preprocessed"
+export nnUNet_results="/path/to/nnUNet_results"
+
+# Install the pretrained model into $nnUNet_results
+nnUNetv2_install_pretrained_model_from_zip pm_model_101.zip
+```
+
+Prepare input CT scans in nnU-Net inference format. For a single-channel CT model, each case should be named with the `_0000.nii.gz` channel suffix:
+
+```text
+/path/to/input_images/
+├── case_001_0000.nii.gz
+├── case_002_0000.nii.gz
+└── ...
+```
+
+Run prediction with the released 5-fold model:
+
+```bash
+nnUNetv2_predict \
+    -i /path/to/input_images \
+    -o /path/to/output_segmentations \
+    -d 101 \
+    -c 3d_lowres \
+    -f 0 1 2 3 4
+```
+
+The output segmentations use labels `0` for background and `1` to `13` for rPCI regions 0 to 12.
+
 ### Evaluation
 
 Compute segmentation metrics (Dice, HD95, ASD):
@@ -174,14 +215,14 @@ python analysis/observer_variability.py \
 
 ```
 /path/to/data/
-├── Scan_001_TS.nii.gz                         # CT scan (portal venous phase)
-├── Scan_002_TS.nii.gz
-├── Segmentations_001_all.nii.gz               # rPCI region labels (0-13)
-├── Segmentations_002_all.nii.gz
+├── Scan_001.nii.gz                         # CT scan (portal venous phase)
+├── Scan_002.nii.gz
+├── Segmentations_001.nii.gz               # rPCI region labels (0-13)
+├── Segmentations_002.nii.gz
 └── ...
 ```
 
-Use the same case identifier in each image/segmentation pair: `Scan_{case_id}_TS.nii.gz` and `Segmentations_{case_id}_all.nii.gz`. If you run the provided dilation pipeline, its processed labels are saved as `Segmentations_{case_id}_all_expanded.nii.gz`.
+Use the same case identifier in each image/segmentation pair: `Scan_{case_id}.nii.gz` and `Segmentations_{case_id}.nii.gz`. If you run the provided raw-data dilation pipeline, its processed labels are saved as `Segmentations_{case_id}_all_expanded.nii.gz`.
 
 ### Label Encoding
 

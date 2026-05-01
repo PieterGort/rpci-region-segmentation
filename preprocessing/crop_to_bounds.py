@@ -389,8 +389,8 @@ def crop_folder_to_segmentation_bounds(
     input_dir,
     output_dir,
     margin_slices=10,
-    image_suffix="_TS.nii.gz",
-    segmentation_suffix="_all_expanded.nii.gz",
+    image_suffix=".nii.gz",
+    segmentation_suffix=".nii.gz",
 ):
     """
     Crop Scan_* images and matching Segmentations_* masks to segmentation bounds.
@@ -447,12 +447,12 @@ def main():
     )
     parser.add_argument(
         "--image-suffix",
-        default="_TS.nii.gz",
+        default=".nii.gz",
         help="Suffix after Scan_{case_id}.",
     )
     parser.add_argument(
         "--segmentation-suffix",
-        default="_all_expanded.nii.gz",
+        default=".nii.gz",
         help="Suffix after Segmentations_{case_id}.",
     )
     args = parser.parse_args()

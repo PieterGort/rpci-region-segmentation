@@ -202,6 +202,7 @@ def load_predefined_splits(
         # Find corresponding label
         label_patterns = [
             os.path.join(labels_dir, f"{identifier}.nii.gz"),
+            os.path.join(labels_dir, f"Segmentations_{identifier}.nii.gz"),
             os.path.join(labels_dir, f"Segmentations_{identifier}_all.nii.gz"),
             os.path.join(labels_dir, f"Segmentations_{identifier}_all_expanded.nii.gz"),
             os.path.join(labels_dir, f"{identifier}_seg.nii.gz"),

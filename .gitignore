@@ -225,6 +225,7 @@ dataset/
 *.ckpt
 weights/
 checkpoints/
+releases/*.zip
 
 # Results and outputs
 results/
