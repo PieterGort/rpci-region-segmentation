@@ -270,7 +270,7 @@ If you use this code in your research, please cite:
 }
 ```
 
-Please also cite the following if you use the respective components:
+<!-- Please also cite the following if you use the respective components:
 
 **nnU-Net:**
 ```bibtex
@@ -319,7 +319,7 @@ Please also cite the following if you use the respective components:
   year={2025},
   doi={10.1007/s00330-025-11762-3}
 }
-```
+``` -->
 
 ## License
 
