@@ -152,6 +152,8 @@ Weights & Biases logging is disabled by default. To enable it, set `wandb.enable
 
 ### Inference with Released nnU-Net Weights
 
+Note: the pretrained nnU-Net weights will be released soon.
+
 When pretrained nnU-Net weights are available from the repository releases, they can be installed into a local nnU-Net environment and used for inference. The `pm_model_101.zip` release asset contains the 5-fold `Dataset101_PM` model for segmenting all thirteen rPCI regions listed above, using the `3d_lowres` nnU-Net configuration.
 
 Download the model from the **Releases** section on the GitHub repository page, in here you find: `pm_model_101.zip` attached as the downloadable zip file. Then install it into your local nnU-Net results folder:
