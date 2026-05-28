@@ -2,6 +2,8 @@
 
 Automated CT segmentation of **radiological Peritoneal Cancer Index (rPCI) regions** using deep learning. This repository contains the code for training and evaluating segmentation models as described in our paper.
 
+> **Pre-release available:** pretrained nnU-Net weights for the 13-region `Dataset101_PM` model are now available from the repository's **Releases** section as `Dataset101_PM.zip`.
+
 > **Deep Learning–Based Segmentation of Radiological Peritoneal Cancer Index Regions in Abdominal Imaging**  
 > Pieter C. Gort, Lotte J.S. Ewals, Marion W. Tops-Welten, Cris H.B. Claessens, Joost Nederend, Fons van der Sommen  
 > *Department of Electrical Engineering, Eindhoven University of Technology & Catharina Hospital Eindhoven*
