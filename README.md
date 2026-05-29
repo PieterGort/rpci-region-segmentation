@@ -2,8 +2,6 @@
 
 Automated CT segmentation of **radiological Peritoneal Cancer Index (rPCI) regions** using deep learning. This repository contains the code for training and evaluating segmentation models as described in our paper.
 
-> **Pre-release available:** pretrained nnU-Net weights for the 13-region `Dataset101_PM` model are now available from the repository's **Releases** section as `Dataset101_PM.zip`.
-
 > **Deep Learning–Based Segmentation of Radiological Peritoneal Cancer Index Regions in Abdominal Imaging**  
 > Pieter C. Gort, Lotte J.S. Ewals, Marion W. Tops-Welten, Cris H.B. Claessens, Joost Nederend, Fons van der Sommen  
 > *Department of Electrical Engineering, Eindhoven University of Technology & Catharina Hospital Eindhoven*
@@ -44,7 +42,7 @@ Our experiments on 62 CT scans with expert annotations showed:
 
 ![Example rPCI segmentation analysis across coronal, axial, and sagittal planes](full_segmentation_analysis_3planes.png)
 
-The source CT scans, annotations, and exact cross-validation splits are not distributed with this repository because they contain confidential clinical data. This repository is intended as a research-methods reference: it documents the preprocessing, training, evaluation, and visualization code used in the study, but it is not a turnkey reproduction package with public data. Trained model weights may be published separately in a future release for inference use.
+The source CT scans, annotations, and exact cross-validation splits are not distributed with this repository because they contain confidential clinical data. This repository is intended as a research-methods reference: it documents the preprocessing, training, evaluation, and visualization code used in the study, but it is not a turnkey reproduction package with public data.
 
 ## Repository Structure
 
@@ -152,28 +150,9 @@ python -m swinunetr.main \
 
 Weights & Biases logging is disabled by default. To enable it, set `wandb.enabled: true` in `configs/swinunetr/default.yaml` and configure your W&B account outside the repository.
 
-### Inference with Released nnU-Net Weights
+### Inference with nnU-Net
 
-Note: the pretrained nnU-Net weights will be released soon.
-
-When pretrained nnU-Net weights are available from the repository releases, they can be installed into a local nnU-Net environment and used for inference. The `pm_model_101.zip` release asset contains the 5-fold `Dataset101_PM` model for segmenting all thirteen rPCI regions listed above, using the `3d_lowres` nnU-Net configuration.
-
-Download the model from the **Releases** section on the GitHub repository page, in here you find: `pm_model_101.zip` attached as the downloadable zip file. Then install it into your local nnU-Net results folder:
-
-```bash
-# Install nnU-Net v2
-pip install nnunetv2
-
-# Configure nnU-Net paths
-export nnUNet_raw="/path/to/nnUNet_raw"
-export nnUNet_preprocessed="/path/to/nnUNet_preprocessed"
-export nnUNet_results="/path/to/nnUNet_results"
-
-# Install the pretrained model into $nnUNet_results
-nnUNetv2_install_pretrained_model_from_zip pm_model_101.zip
-```
-
-Prepare input CT scans in nnU-Net inference format. For a single-channel CT model, each case should be named with the `_0000.nii.gz` channel suffix:
+After training an nnU-Net model, prepare input CT scans in nnU-Net inference format. For a single-channel CT model, each case should be named with the `_0000.nii.gz` channel suffix:
 
 ```text
 /path/to/input_images/
@@ -182,13 +161,13 @@ Prepare input CT scans in nnU-Net inference format. For a single-channel CT mode
 └── ...
 ```
 
-Run prediction with the released 5-fold model:
+Run prediction with the trained 5-fold model:
 
 ```bash
 nnUNetv2_predict \
     -i /path/to/input_images \
     -o /path/to/output_segmentations \
-    -d 101 \
+    -d 001 \
     -c 3d_lowres \
     -f 0 1 2 3 4
 ```
