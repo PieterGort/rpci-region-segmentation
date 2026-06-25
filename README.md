@@ -2,6 +2,8 @@
 
 Automated CT segmentation of **radiological Peritoneal Cancer Index (rPCI) regions** using deep learning. This repository contains the code for training and evaluating segmentation models as described in our paper.
 
+> **First model released:** pretrained nnU-Net weights for 13-region rPCI segmentation are available from the repository's [Releases](https://github.com/PieterGort/rpci-region-segmentation/releases) page.
+
 > **Deep Learning–Based Segmentation of Radiological Peritoneal Cancer Index Regions in Abdominal Imaging**  
 > Pieter C. Gort, Lotte J.S. Ewals, Marion W. Tops-Welten, Cris H.B. Claessens, Joost Nederend, Fons van der Sommen  
 > *Department of Electrical Engineering, Eindhoven University of Technology & Catharina Hospital Eindhoven*
@@ -13,6 +15,7 @@ Peritoneal metastases (PM) are currently assessed using diagnostic laparoscopy t
 This repository provides:
 - **SwinUNETR** implementation using MONAI
 - **nnU-Net** training pipeline (following the [official nnU-Net framework](https://github.com/MIC-DKFZ/nnUNet))
+- Released nnU-Net weights for 13-region rPCI segmentation
 - Analysis scripts for computing segmentation metrics and interobserver variability
 - Preprocessing and postprocessing utilities
 
@@ -152,7 +155,24 @@ Weights & Biases logging is disabled by default. To enable it, set `wandb.enable
 
 ### Inference with nnU-Net
 
-After training an nnU-Net model, prepare input CT scans in nnU-Net inference format. For a single-channel CT model, each case should be named with the `_0000.nii.gz` channel suffix:
+You can run inference with your own trained nnU-Net model or with the released fine 13-region rPCI segmentation model from the repository's [Releases](https://github.com/PieterGort/rpci-region-segmentation/releases) page.
+
+To use released weights, install nnU-Net v2, configure the nnU-Net paths, download the model archive from the release page, and install it into your local nnU-Net results folder:
+
+```bash
+# Install nnU-Net v2
+pip install nnunetv2
+
+# Configure nnU-Net paths
+export nnUNet_raw="/path/to/nnUNet_raw"
+export nnUNet_preprocessed="/path/to/nnUNet_preprocessed"
+export nnUNet_results="/path/to/nnUNet_results"
+
+# Install the downloaded model archive into $nnUNet_results
+nnUNetv2_install_pretrained_model_from_zip /path/to/downloaded_model.zip
+```
+
+Prepare input CT scans in nnU-Net inference format. For a single-channel CT model, each case should be named with the `_0000.nii.gz` channel suffix:
 
 ```text
 /path/to/input_images/
@@ -161,16 +181,20 @@ After training an nnU-Net model, prepare input CT scans in nnU-Net inference for
 └── ...
 ```
 
-Run prediction with the trained 5-fold model:
+Run prediction with the trained or installed 5-fold model:
 
 ```bash
+DATASET_ID=001  # Replace with the dataset id of the trained or installed model.
+
 nnUNetv2_predict \
     -i /path/to/input_images \
     -o /path/to/output_segmentations \
-    -d 001 \
+    -d "$DATASET_ID" \
     -c 3d_lowres \
     -f 0 1 2 3 4
 ```
+
+Use the dataset id and configuration associated with the trained or installed model.
 
 The output segmentations use labels `0` for background and `1` to `13` for rPCI regions 0 to 12.
 
