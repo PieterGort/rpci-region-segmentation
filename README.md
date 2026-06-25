@@ -277,56 +277,41 @@ If you use this code in your research, please cite:
 }
 ```
 
-<!-- Please also cite the following if you use the respective components:
+Please also cite nnU-Net, which this repository builds on, and the Delphi study that defined the imaging-based rPCI region boundaries:
 
 **nnU-Net:**
 ```bibtex
-@article{isensee2021nnunet,
-  title={nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation},
-  author={Isensee, Fabian and Jaeger, Paul F and Kohl, Simon AA and Petersen, Jens and Maier-Hein, Klaus H},
-  journal={Nature methods},
-  volume={18},
-  number={2},
-  pages={203--211},
-  year={2021}
-}
-```
-
-**SwinUNETR:**
-```bibtex
-@article{hatamizadeh2022swinunetr,
-  title={Swin UNETR: Swin Transformers for Semantic Segmentation of Brain Tumors in MRI Images},
-  author={Hatamizadeh, Ali and Nath, Vishwesh and Tang, Yucheng and Yang, Dong and Roth, Holger R and Xu, Daguang},
-  journal={Lecture Notes in Computer Science},
-  volume={12962},
-  pages={272--284},
-  year={2022},
-  doi={10.1007/978-3-031-08999-2_22}
-}
-```
-
-**MONAI:**
-```bibtex
-@misc{cardoso2022monai,
-  title={MONAI: An open-source framework for deep learning in healthcare}, 
-  author={M. Jorge Cardoso and Wenqi Li and Richard Brown and others},
-  year={2022},
-  eprint={2211.02701},
-  archivePrefix={arXiv},
-  url={https://arxiv.org/abs/2211.02701}
+@article{Isensee2018NnU-Net:Segmentation,
+    title = {{nnU-Net: Self-adapting Framework for U-Net-Based Medical Image Segmentation}},
+    year = {2018},
+    journal = {Informatik aktuell},
+    author = {Isensee, Fabian and Petersen, Jens and Klein, Andre and Zimmerer, David and Jaeger, Paul F. and Kohl, Simon and Wasserthal, Jakob and Koehler, Gregor and Norajitra, Tobias and Wirkert, Sebastian and Maier-Hein, Klaus H.},
+    month = {9},
+    pages = {22},
+    publisher = {Springer Berlin Heidelberg},
+    url = {https://arxiv.org/abs/1809.10486v1},
+    isbn = {9783658253257},
+    doi = {10.1007/978-3-658-25326-4\_7},
+    issn = {1431472X},
+    arxivId = {1809.10486}
 }
 ```
 
 **rPCI Region Definitions:**
 ```bibtex
-@article{tops2025defining,
-  title={Defining region boundaries to assess the peritoneal cancer index on imaging: a Delphi study},
-  author={Tops-Welten, Marion W and Ewals, Lotte JS and van Hellemond, Irene EG and others},
-  journal={European Radiology},
-  year={2025},
-  doi={10.1007/s00330-025-11762-3}
+@article{Tops-Welten2025DefiningStudy,
+    title = {{Defining region boundaries to assess the peritoneal cancer index on imaging: a Delphi study}},
+    year = {2025},
+    journal = {European Radiology 2025},
+    author = {Tops-Welten, Marion W. and Ewals, Lotte J. S. and van Hellemond, Irene E. G. and Piek, Jurgen M. J. and Lahaye, Max J. and De Hingh, Ignace H. J. T. and Nederend, Joost and Luyer, Misha D. P.},
+    month = {6},
+    pages = {1--11},
+    publisher = {Springer},
+    url = {https://link.springer.com/article/10.1007/s00330-025-11762-3},
+    doi = {10.1007/S00330-025-11762-3},
+    issn = {1432-1084}
 }
-``` -->
+```
 
 ## License
 
