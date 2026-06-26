@@ -33,13 +33,14 @@ This repository provides:
 
 ## Results
 
-Our experiments on 62 CT scans with expert annotations showed:
+Five-fold cross-validation on 62 CT scans with expert annotations showed:
 
-| Model | Dice Score | HD95 (mm) | ASD (mm) |
-|-------|------------|-----------|----------|
-| **nnU-Net** | **0.82 ± 0.15** | 13.73 ± 12.03 | 4.10 ± 5.03 |
-| SwinUNETR | 0.76 ± 0.18 | 16.82 ± 14.21 | 5.23 ± 6.12 |
-| Interobserver | 0.88 ± 0.02 | 11.7 ± 3.3 | 2.5 ± 0.6 |
+| Method | Dice Score | HD95 (mm) | ASD (mm) |
+|--------|------------|-----------|----------|
+| Baseline nnU-Net | 0.81 ± 0.15 | 13.7 ± 10.8 | 4.1 ± 4.6 |
+| **Anatomically constrained pipeline** | **0.84 ± 0.13** | **11.8 ± 9.4** | **3.4 ± 3.6** |
+
+Swin UNETR reached an overall Dice score of 0.76 on the same 62-scan cross-validation cohort. As a separate clinical reference, interobserver agreement was measured in a 10-scan triple-annotation experiment, yielding Dice 0.87 ± 0.07, HD95 9.5 ± 6.5 mm, and ASD 3.0 ± 3.7 mm. These interobserver values contextualize the model results but are not pooled with the cross-validation experiment.
 
 ### Example Segmentation
 
@@ -155,7 +156,7 @@ Weights & Biases logging is disabled by default. To enable it, set `wandb.enable
 
 ### Inference with nnU-Net
 
-You can run inference with your own trained nnU-Net model or with the released fine 13-region rPCI segmentation model from the repository's [Releases](https://github.com/PieterGort/rpci-region-segmentation/releases) page.
+You can run inference with your own trained nnU-Net model or with the released rPCI segmentation models from the repository's [Releases](https://github.com/PieterGort/rpci-region-segmentation/releases) page.
 
 To use released weights, install nnU-Net v2, configure the nnU-Net paths, download the model archive from the release page, and install it into your local nnU-Net results folder:
 
@@ -196,7 +197,37 @@ nnUNetv2_predict \
 
 Use the dataset id and configuration associated with the trained or installed model.
 
-The output segmentations use labels `0` for background and `1` to `13` for rPCI regions 0 to 12.
+For the `Dataset101_PM` model, the output segmentations use labels `0` for background and `1` to `13` for rPCI regions 0 to 12.
+
+#### Dataset401 Coarse Model
+
+The `Dataset401_PMSmallBowel` model predicts a coarser rPCI label set that merges anatomically related regions:
+
+- `region45`: rPCI regions 4 and 5
+- `region78`: rPCI regions 7 and 8
+- `region9_12`: rPCI regions 9, 10, 11, and 12
+
+This coarse model can improve segmentation robustness for boundaries that are difficult to distinguish directly on CT. To recover the 13 rPCI regions, postprocess the coarse predictions with the provided anatomically constrained postprocessing script.
+
+```bash
+# Predict coarse regions after installing Dataset401_PMSmallBowel.zip
+nnUNetv2_predict \
+    -i /path/to/input_images \
+    -o /path/to/coarse_output_segmentations \
+    -d 401 \
+    -c 3d_lowres \
+    -f 0 1 2 3 4
+
+# Convert coarse predictions back to 13 rPCI regions.
+# This uses TotalSegmentator masks for hip, duodenum, and small-bowel anatomy.
+python -m postprocessing.postprocess_coarse_segmentation \
+    --input_folder /path/to/coarse_output_segmentations \
+    --scan_folder /path/to/input_images \
+    --output_folder /path/to/postprocessed_13_region_segmentations \
+    --run_totalsegmentator
+```
+
+If TotalSegmentator masks have already been computed, pass their folder with `--totalseg_folder` instead of `--run_totalsegmentator`.
 
 ### Evaluation
 
