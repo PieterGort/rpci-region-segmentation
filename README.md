@@ -52,44 +52,62 @@ The source CT scans, annotations, and exact cross-validation splits are not dist
 
 ```
 rpci-region-segmentation/
-├── swinunetr/                   # SwinUNETR implementation (MONAI)
-│   ├── main.py                  # Training entry point
-│   ├── train.py                 # Training loop
-│   ├── model.py                 # Model initialization
-│   ├── dataset.py               # Data loading utilities
-│   ├── predict.py               # Inference script
-│   └── utils.py                 # Visualization & logging
+├── README.md                              # Project overview and usage examples
+├── LICENSE                                # MIT license
+├── requirements.txt                       # Python dependencies
+├── setup.py                               # Package metadata and console entry points
+├── Dockerfile                             # Optional container image definition
+├── full_segmentation_analysis_3planes.png # Example segmentation figure
 │
-├── nnunet/                      # nnU-Net utilities
-│   └── README.md                # nnU-Net setup guide
+├── swinunetr/                             # SwinUNETR implementation (MONAI)
+│   ├── __init__.py
+│   ├── main.py                            # Training entry point
+│   ├── train.py                           # Training and validation loops
+│   ├── model.py                           # Model initialization and loading
+│   ├── dataset.py                         # Data loading and split utilities
+│   ├── predict.py                         # SwinUNETR inference script
+│   └── utils.py                           # Plotting and logging helpers
 │
-├── analysis/                    # Evaluation scripts
-│   ├── compute_metrics.py       # Dice, HD95, ASD computation
-│   └── observer_variability.py  # Interobserver agreement
+├── nnunetv2/                              # nnU-Net v2 notes for this project
+│   ├── __init__.py
+│   └── README.md                          # nnU-Net setup guide
 │
-├── preprocessing/               # Data preprocessing
-│   ├── convert_to_nnunet.py     # Convert to nnU-Net format
-│   ├── dilate_segmentations.py  # Mask dilation
-│   └── crop_to_bounds.py        # Crop to segmentation bounds
+├── analysis/                              # Evaluation scripts
+│   ├── __init__.py
+│   ├── compute_metrics.py                 # Dice, HD95, ASD computation
+│   └── observer_variability.py            # Interobserver agreement
 │
-├── scripts/
-│   └── run_preprocessing.py     # End-to-end preprocessing wrapper
+├── preprocessing/                         # Data preprocessing
+│   ├── __init__.py
+│   ├── convert_to_nnunet.py               # Convert flat data to nnU-Net format
+│   ├── crop_to_bounds.py                  # Crop images/segmentations to label bounds
+│   └── dilate_segmentations.py            # Combine and expand segmentation masks
 │
-├── postprocessing/              # Post-processing utilities
-│   ├── postprocess.py           # Connected component filtering
-│   ├── postprocess_coarse_segmentation.py  # Convert coarse Dataset401 outputs to 13 rPCI regions
-│   └── resample_to_original.py  # Resample predictions
+├── scripts/                               # Command-line workflow wrappers
+│   ├── __init__.py
+│   └── run_preprocessing.py               # End-to-end preprocessing wrapper
 │
-├── visualization/               # Plotting utilities
-│   ├── plot_results.py          # Lightweight segmentation overlays
-│   └── visualization.py         # Paper plotting utilities
+├── postprocessing/                        # Post-processing utilities
+│   ├── __init__.py
+│   ├── config.py                          # Region mappings for coarse postprocessing
+│   ├── postprocess.py                     # Connected component filtering
+│   ├── postprocess_coarse_segmentation.py # Convert Dataset401 outputs to 13 rPCI regions
+│   └── resample_to_original.py            # Resample predictions to original image space
 │
-├── configs/                     # Configuration files
+├── visualization/                         # Plotting utilities
+│   ├── __init__.py
+│   ├── plot_results.py                    # Lightweight segmentation overlays
+│   └── visualization.py                   # Paper plotting utilities
+│
+├── configs/                               # Configuration files
 │   └── swinunetr/default.yaml
 │
-└── docs/                        # Documentation
-    ├── installation.md
-    └── data_format.md
+├── docs/                                  # Documentation
+│   ├── installation.md
+│   └── data_format.md
+│
+└── experiments/
+    └── __init__.py
 ```
 
 ## Quick Start
