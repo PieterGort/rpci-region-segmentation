@@ -77,6 +77,7 @@ rpci-region-segmentation/
 │
 ├── postprocessing/              # Post-processing utilities
 │   ├── postprocess.py           # Connected component filtering
+│   ├── postprocess_coarse_segmentation.py  # Convert coarse Dataset401 outputs to 13 rPCI regions
 │   └── resample_to_original.py  # Resample predictions
 │
 ├── visualization/               # Plotting utilities
